@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘 뭐 먹지? - 질문 4</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .slider-container {
+            width: 100%;
+            padding: 20px;
+        }
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .slider-label {
+            min-width: 80px;
+            padding: 8px 16px;
+            background-color: #F4B84F;
+            color: black;
+            text-align: center;
+            border-radius: 8px;
+        }
+        input[type="range"] {
+            flex: 1;
+            margin: 0 20px;
+            height: 2px;
+            background: #F4B84F;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #000;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+    {% csrf_token %}
+    <div class="container mx-auto px-4 py-8 max-w-md">
+        <div class="space-y-8">
+            <!-- 상단 이미지 영역 -->
+            <div class="mb-8">
+                <img src="{% static 'images/question4.jpg' %}" alt="질문3이미지" class="w-[1000px] h-auto" >
+            </div>
+
+            <!-- 질문 영역 -->
+            <div class="bg-blue-400 text-white py-4 px-6 rounded-lg text-center text-xl font-bold">
+                어떤 맛을 원하는지?
+            </div>
+
+            <!-- 슬라이더 영역 -->
+            <div class="slider-container">
+                <div class="slider-wrapper">
+                    <span class="slider-label">안 매움</span>
+                    <input type="range" min="1" max="5" value="3" class="slider" id="spicySlider">
+                    <span class="slider-label">매운맛</span>
+                </div>
+
+                <div class="slider-wrapper">
+                    <span class="slider-label">기름 X</span>
+                    <input type="range" min="1" max="5" value="3" class="slider" id="oilSlider">
+                    <span class="slider-label">기름 잔뜩</span>
+                </div>
+
+                <div class="slider-wrapper">
+                    <span class="slider-label">흐물</span>
+                    <input type="range" min="1" max="5" value="3" class="slider" id="textureSlider">
+                    <span class="slider-label">바삭</span>
+                </div>
+
+                <div class="slider-wrapper">
+                    <span class="slider-label">담백</span>
+                    <input type="range" min="1" max="5" value="3" class="slider" id="tasteSlider">
+                    <span class="slider-label">단짠단짠</span>
+                </div>
+            </div>
+
+            <!-- 노상관 버튼 -->
+            <button onclick="selectNoPreference()"
+                    class="no-preference-btn w-full bg-[#F4B84F] hover:bg-[#e5a93e] text-black py-2 px-4 rounded-lg text-center text-lg font-medium transition-colors">
+                노상관
+            </button>
+
+            <!-- 결과보기 버튼 -->
+            <div class="text-center mt-8">
+                <button onclick="submitAnswers()"
+                        class="result-button bg-[#F4B84F] hover:bg-[#e5a93e] text-black py-3 px-12 rounded-lg text-lg font-medium transition-colors"
+                        style="display: none;">
+                    결과보기
+                </button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let noPreference = false;
+
+    // getCookie 함수 추가
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function selectNoPreference() {
+        noPreference = true;
+        // 슬라이더 비활성화
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.value = 3;
+            slider.disabled = true;
+        });
+
+        // 노상관 버튼 하이라이트
+        document.querySelector('.no-preference-btn').classList.add('ring-4', 'ring-blue-500');
+
+        // 결과보기 버튼 표시
+        const resultButton = document.querySelector('.result-button');
+        if (resultButton) {
+            resultButton.style.display = 'inline-block';
+        }
+    }
+
+    // 슬라이더에 이벤트 리스너 추가
+    document.querySelectorAll('input[type="range"]').forEach(slider => {
+        slider.addEventListener('input', () => {
+            noPreference = false;
+            // 노상관 버튼 하이라이트 제거
+            document.querySelector('.no-preference-btn').classList.remove('ring-4', 'ring-blue-500');
+
+            // 슬라이더들 활성화
+            document.querySelectorAll('input[type="range"]').forEach(s => {
+                s.disabled = false;
+            });
+
+            // 결과보기 버튼 표시
+            const resultButton = document.querySelector('.result-button');
+            if (resultButton) {
+                resultButton.style.display = 'inline-block';
+            }
+        });
+    });
+
+    // 페이지 로드 시 결과보기 버튼 표시 (선택사항)
+    document.addEventListener('DOMContentLoaded', () => {
+        const resultButton = document.querySelector('.result-button');
+        if (resultButton) {
+            resultButton.style.display = 'inline-block';
+        }
+    });
+
+function submitAnswers() {
+    const answers = noPreference ?
+        {
+            spicy: 3,
+            oil: 3,
+            texture: 3,
+            taste: 3,
+            noPreference: false
+        } :
+        {
+            spicy: parseInt(document.getElementById('spicySlider').value),
+            oil: parseInt(document.getElementById('oilSlider').value),
+            texture: parseInt(document.getElementById('textureSlider').value),
+            taste: parseInt(document.getElementById('tasteSlider').value),
+            noPreference: false
+        };
+
+    console.log('Submitting answers:', answers);
+
+    fetch('/question4/save/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(answers)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Server response:', data);
+
+        if (data.status === 'success') {
+            console.log('Redirecting to results page...');
+            window.location.href = '/result/';
+        } else {
+            throw new Error(data.message || '저장 실패');
+        }
+    })
+    .catch(error => {
+        console.error('Error in submitAnswers:', error);
+        alert('오류가 발생했습니다: ' + error.message);
+    });
+}
+</script>
+</body>
+</html>

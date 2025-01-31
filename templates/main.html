@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘 뭐 먹지?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+    <div class="container mx-auto px-4 py-8 max-w-md">
+        <div class="text-center space-y-8">
+            <div class="mb-8">
+                <img src="{% static 'images/main_1.png' %}" alt="오늘 뭐 먹지" class="mx-auto max-w-full h-auto">
+            </div>
+
+            <!-- 이미지 영역 -->
+            <div class="mb-8">
+                <img src="{% static 'images/main_2.png' %}" alt="메인 이미지" class="w-full rounded-lg shadow-lg">
+            </div>
+
+            <!-- 테스트 시작 버튼 -->
+            <a href="{% url 'question1' %}"
+               class="inline-block w-full bg-black text-white py-4 px-8 rounded-lg mb-8 hover:bg-gray-800 transition-colors font-sans"
+               style="font-family: 'Noto Sans KR', sans-serif;">
+                테스트 해보러 가기
+            </a>
+
+            <!-- 공유 및 개발자 정보 -->
+            <div class="space-y-4 max-w-[200px] mx-auto">  <!-- max-w-[200px]와 mx-auto 추가 -->
+                <button onclick="shareResult()"
+                        class="w-full bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors">
+                    공유하기
+                </button>
+
+                <a href="https://github.com/2joonkim"
+                   target="_blank"
+                   class="inline-block w-full bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors">
+                    개발자 github
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function shareResult() {
+            // 공유하기 기능
+            if (navigator.share) {
+                navigator.share({
+                    title: '오늘 뭐 먹지?',
+                    text: '음식 추천 심리테스트로 오늘 메뉴 고민을 해결해보세요!',
+                    url: window.location.href
+                })
+                .catch((error) => console.log('공유 실패:', error));
+            } else {
+                // 공유 API를 지원하지 않는 브라우저의 경우
+                alert('URL이 복사되었습니다!');
+                navigator.clipboard.writeText(window.location.href);
+            }
+        }
+    </script>
+</body>
+</html>

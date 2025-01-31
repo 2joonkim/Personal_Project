@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘 뭐 먹지? - 질문 1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+    <div class="container mx-auto px-4 py-8 max-w-md">
+        <div class="space-y-8">
+            <!-- 상단 이미지 영역 -->
+            <div class="mb-8">
+                <img src="{% static 'images/question1.jpg' %}" alt="질문1이미지" class="w-[1000px] h-auto" >
+            </div>
+
+            <!-- 질문 영역 -->
+            <div class="bg-blue-400 text-white py-4 px-6 rounded-lg text-center text-xl font-bold">
+                먹기 전 인원 수 확인
+            </div>
+
+            <!-- 선택지 영역 -->
+            <div class="space-y-4">
+                <button type="button"
+                        data-option="싱글"
+                        onclick="selectOption('싱글')"
+                        class="option-btn w-full bg-[#F4B84F] hover:bg-[#e5a93e] text-black py-2 px-4 rounded-lg text-center text-lg font-medium transition-colors">
+                    1인
+                </button>
+
+                <button type="button"
+                        data-option="2인"
+                        onclick="selectOption('2인')"
+                        class="option-btn w-full bg-[#F4B84F] hover:bg-[#e5a93e] text-black py-2 px-4 rounded-lg text-center text-lg font-medium transition-colors">
+                    2인
+                </button>
+
+                <button type="button"
+                        data-option="3인이상"
+                        onclick="selectOption('3인이상')"
+                        class="option-btn w-full bg-[#F4B84F] hover:bg-[#e5a93e] text-black py-2 px-4 rounded-lg text-center text-lg font-medium transition-colors">
+                    3인 이상
+                </button>
+            </div>
+
+            <!-- 다음으로 버튼 -->
+            <div class="text-center mt-8">
+                <button id="nextButton"
+                        onclick="goToNext()"
+                        class="bg-[#F4B84F] hover:bg-[#e5a93e] text-black py-3 px-12 rounded-lg text-lg font-medium transition-colors"
+                        style="display: none;">
+                    다음으로
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedOption = null;
+
+        function selectOption(option) {
+            // 모든 버튼의 선택 상태 초기화
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('ring-4', 'ring-blue-500');
+            });
+
+            // 클릭된 버튼 찾아서 선택 표시
+            const clickedButton = document.querySelector(`button[data-option="${option}"]`);
+            if (clickedButton) {
+                clickedButton.classList.add('ring-4', 'ring-blue-500');
+                selectedOption = option;
+                document.getElementById('nextButton').style.display = 'inline-block';
+            }
+        }
+
+        function goToNext() {
+            if (!selectedOption) {
+                alert('옵션을 선택해주세요!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('answer', selectedOption);
+
+            fetch('/question1/save/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.href = '/question2/';
+                } else {
+                    throw new Error(data.message || '저장 실패');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>
