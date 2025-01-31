@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-kpp2!c1q#6ha+*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get('DJANGO_DEBUG', False))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['eatmaker-b680dc4fddc6.herokuapp.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
