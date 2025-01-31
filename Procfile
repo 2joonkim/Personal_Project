@@ -1,3 +1,3 @@
 
-web: gunicorn food_survey.wsgi --log-file -
+web: gunicorn config.wsgi --log-file -
 

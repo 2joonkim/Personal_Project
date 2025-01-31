@@ -52,7 +52,6 @@ THIRD_PARTY_APPS = [
 
 INSTALLED_APPS = DJANGO_APPS + OWN_APPS + THIRD_PARTY_APPS
 
-OWN_APPS = []
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
