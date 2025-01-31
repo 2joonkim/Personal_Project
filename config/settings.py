@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 
-os.environ['OPENAI_API_KEY'] = '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'
+os.environ['OPENAI_API_KEY'] = '입력git remote add origin https://github.com/2joonkim/Personal_Project.git'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
