@@ -1,0 +1,3 @@
+config/settings.py
+config/__pycache__/
+.idea

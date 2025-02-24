@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘 뭐 먹지? - 결과</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <!-- 카카오톡 공유 API -->
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+    <div class="container mx-auto px-4 py-8 max-w-md">
+        <div class="space-y-8 result-card">
+            <!-- 제목 영역 -->
+            <div class="bg-black text-white py-4 px-6 rounded-lg text-center text-2xl font-bold">
+                오늘의 메뉴는?
+            </div>
+
+            <!-- 음식 이미지 영역 -->
+            <div class="mb-8">
+                <img src="{% static 'images/result.jpg' %}" alt="결과 이미지" class="w-[1000px] h-auto" >
+            </div>
+
+            <!-- 음식 이름 -->
+            <div class="bg-black text-white py-4 px-6 rounded-lg text-center text-xl font-bold">
+                {{ food_name }} ({{ cuisine_type }})
+            </div>
+
+            <!-- 점수 설명 영역 -->
+            <div class="space-y-4">
+                <div class="bg-blue-400 text-white py-2 px-4 rounded-lg text-center font-bold">
+                    먹거리 지수 : {{ score }}점<br>
+                    높으면 높을 수록 폭식할 확률 UP ⬆️
+                </div>
+
+                <!-- AI 추천 메시지 -->
+                <div class="bg-green-100 p-4 rounded-lg text-center">
+                    <p class="font-bold mb-2">맛있게 드세요~!</p>
+                    <p class="text-gray-800">{{ message }}</p>
+                </div>
+
+                <!-- 음식 설명 -->
+                <div class="bg-yellow-100 p-4 rounded-lg">
+                    <p class="font-bold mb-2">음식 설명</p>
+                    <p class="text-gray-800">{{ description }}</p>
+                </div>
+
+                <!-- 추천 이유 -->
+                <div class="bg-purple-100 p-4 rounded-lg">
+                    <p class="font-bold mb-2">이 음식을 추천하는 이유</p>
+                    <p class="text-gray-800">{{ reason }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="grid grid-cols-2 gap-4 mt-8">
+            <button onclick="location.href='/'"
+                    class="bg-black text-white py-3 px-6 rounded-lg text-center font-medium hover:bg-gray-800 transition-colors">
+                다시하기
+            </button>
+            <button onclick="saveImage()"
+                    class="bg-black text-white py-3 px-6 rounded-lg text-center font-medium hover:bg-gray-800 transition-colors">
+                이미지 저장
+            </button>
+        </div>
+
+        <!-- SNS 공유 버튼들 -->
+        <div class="grid grid-cols-3 gap-4 mt-4">
+            <button onclick="shareKakao()"
+                    class="bg-black text-white py-3 px-6 rounded-lg text-center text-sm font-medium hover:bg-gray-800 transition-colors">
+                카카오톡<br>공유
+            </button>
+            <button onclick="shareInstagram()"
+                    class="bg-black text-white py-3 px-6 rounded-lg text-center text-sm font-medium hover:bg-gray-800 transition-colors">
+                인스타그램<br>공유
+            </button>
+            <button onclick="copyPageUrl()"
+                    class="bg-black text-white py-3 px-6 rounded-lg text-center text-sm font-medium hover:bg-gray-800 transition-colors">
+                URL<br>복사하기
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 기존 스크립트 그대로 유지
+        // 카카오톡 공유 기능 초기화
+        if (window.Kakao) {
+            Kakao.init('YOUR_KAKAO_APP_KEY');
+        }
+
+        function shareKakao() {
+            if (window.Kakao) {
+                Kakao.Link.sendDefault({
+                    objectType: 'feed',
+                    content: {
+                        title: '오늘의 메뉴 추천 결과',
+                        description: '{{ food_name }}이(가) 추천되었어요! (점수: {{ score }}점)',
+                        imageUrl: window.location.origin + '{% static "images/food.jpg" %}',
+                        link: {
+                            mobileWebUrl: window.location.href,
+                            webUrl: window.location.href,
+                        },
+                    },
+                    buttons: [
+                        {
+                            title: '결과 보기',
+                            link: {
+                                mobileWebUrl: window.location.href,
+                                webUrl: window.location.href,
+                            },
+                        },
+                    ],
+                });
+            } else {
+                alert('카카오톡 공유 기능을 사용할 수 없습니다.');
+            }
+        }
+
+        function shareInstagram() {
+            alert('인스타그램 공유 기능은 준비중입니다.');
+        }
+
+        function saveImage() {
+            html2canvas(document.querySelector('.result-card')).then(canvas => {
+                try {
+                    const link = document.createElement('a');
+                    link.download = '음식추천결과.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                } catch (err) {
+                    console.error('Error saving image:', err);
+                    alert('이미지 저장에 실패했습니다.');
+                }
+            });
+        }
+
+        function copyPageUrl() {
+            navigator.clipboard.writeText(window.location.href)
+                .then(() => alert('URL이 복사되었습니다!'))
+                .catch(() => alert('URL 복사에 실패했습니다.'));
+        }
+    </script>
+</body>
+</html>
