@@ -24,4 +24,4 @@ Python을 이용한 Todo List 제작
 - **기능**: python을 이용한 간단한 Todo List 제작
 - **기술 스택**: Python
 - **설명**: python을 이용한 간단한 Todo List 제작
-- **링크**: [프로젝트 링크]()
+- **링크**: [프로젝트 링크](https://github.com/2joonkim/Personal_Project/tree/main/TodoList_Python_%EC%96%B4%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98)
